@@ -37,6 +37,19 @@ jobs:
         -name "${{ env.NUGET_SOURCE_NAME }}"
         -username "${{ github.actor }}"
         -password "${{ secrets.GITHUB_TOKEN }}"
+
+    - name: Install dependencies (Ubuntu)
+      if: matrix.os == 'ubuntu-latest'
+      run: sudo apt-get install -y libx11-dev libxrandr-dev libxi-dev libudev-dev libgl1-mesa-dev
+
+    - name: Cache vcpkg dependencies
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/local/share/vcpkg/installed
+          C:\vcpkg\installed
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+
     - name: Use vcpkg to fetch dependencies
       env:
         VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
@@ -53,11 +66,3 @@ jobs:
         configurePreset: ${{ matrix.cmake_preset }}
         buildPreset: ${{ matrix.cmake_preset }}
         testPreset: ${{ matrix.cmake_preset }}
-
-    #- name: Generate Test Report
-    #  uses: dorny/test-reporter@v1.5.0
-    #  if: success() || failure()
-    #  with:
-    #    name: go-tests - ${{ matrix.os }} - ${{ matrix.cmake_preset }}
-    #    path: out/${{ matrix.cmake_preset }}/junit-output/*
-    #    reporter: java-junit

@@ -2,7 +2,6 @@
 #include <iostream>
 #include <filesystem>
 
-
 int main() {
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hello, World!");
