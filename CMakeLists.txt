@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.16)
 project(main)
 
 # Add source to this project's executable.
-add_executable (main main.cpp)
+add_executable (main "src/main.cpp")
 
 install (TARGETS main)
 
