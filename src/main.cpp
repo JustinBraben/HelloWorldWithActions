@@ -7,11 +7,13 @@ int main() {
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hello, World!");
 
-    // Get the path to the executable
-    std::filesystem::path execPath = std::filesystem::current_path();
+    // Get the path to the current source file
+    std::filesystem::path srcPath(__FILE__);
 
     // Construct the correct path to the font file
-    std::filesystem::path fontPath = execPath / ".." / ".." / "src" / "assets" / "arial.ttf";
+    std::filesystem::path fontPath = srcPath.parent_path() / "assets" / "arial.ttf";
+
+    std::cout << fontPath << '\n';
 
     // Load a font
     sf::Font font;

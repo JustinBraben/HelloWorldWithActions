@@ -54,10 +54,10 @@ jobs:
         buildPreset: ${{ matrix.cmake_preset }}
         testPreset: ${{ matrix.cmake_preset }}
 
-    - name: Generate Test Report
-      uses: dorny/test-reporter@v1.5.0
-      if: success() || failure()
-      with:
-        name: go-tests - ${{ matrix.os }} - ${{ matrix.cmake_preset }}
-        path: out/${{ matrix.cmake_preset }}/junit-output/*
-        reporter: java-junit
+    #- name: Generate Test Report
+    #  uses: dorny/test-reporter@v1.5.0
+    #  if: success() || failure()
+    #  with:
+    #    name: go-tests - ${{ matrix.os }} - ${{ matrix.cmake_preset }}
+    #    path: out/${{ matrix.cmake_preset }}/junit-output/*
+    #    reporter: java-junit
