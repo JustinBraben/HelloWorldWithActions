@@ -117,5 +117,5 @@ jobs:
     - name: Run CMake with manifest mode vcpkg
       shell: bash
       run: cmake -B build
-        -D "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
-        -D "VCPKG_INSTALLED_DIR:FILEPATH="${VCPKG_DEFAULT_BINARY_CACHE}"
+        -D "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+        -D "VCPKG_INSTALLED_DIR:FILEPATH=$VCPKG_DEFAULT_BINARY_CACHE"
