@@ -40,7 +40,6 @@ jobs:
         -name "${{ env.NUGET_SOURCE_NAME }}"
         -username "${{ github.actor }}"
         -password "${{ secrets.GITHUB_TOKEN }}"
-
     - name: Install dependencies (Ubuntu)
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install -y libx11-dev libxrandr-dev libxi-dev libudev-dev libgl1-mesa-dev
@@ -55,42 +54,35 @@ jobs:
         fi
       if: runner.os == 'Linux'
 
-    #- name: Restore vcpkg
-    #  uses: actions/cache@v3
-    #  with:
-    #    path: |
-    #      /usr/local/share/vcpkg
-    #      C:\vcpkg
-    #    key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+    - name: Restore vcpkg
+      uses: actions/cache@v3
+      with:
+        path: |
+          /usr/local/share/vcpkg
+          C:\vcpkg
+        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
 
-    #- name: Set VCPKG_ROOT for Windows
-    #  if: runner.os == 'Windows'
-    #  run: |
-    #    echo "Setting VCPKG_ROOT to C:\vcpkg"
-    #    echo "VCPKG_ROOT=C:\vcpkg" >> $GITHUB_ENV
-
-    #- name: Set VCPKG_ROOT for Linux
-    #  if: runner.os == 'Linux'
-    #  run: |
-    #    echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
-    #    echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
-
-    #- name: Set VCPKG_ROOT for macOS
-    #  if: runner.os == 'macOS'
-    #  run: |
-    #    echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
-    #    echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
-
-    #- name: Use vcpkg to fetch dependencies
-    #  env:
-    #    VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
-    #  #if: steps.cache-vcpkg.outputs.cache-hit == 'true'
-    #  run: | 
-    #      vcpkg install
-    - name: Set up vcpkg
-      uses: friendlyanon/setup-vcpkg@v1
-      with: { committish: 63aa65e65b9d2c08772ea15d25fb8fdb0d32e557 }
-
+    - name: Set VCPKG_ROOT for Windows
+      if: runner.os == 'Windows'
+      run: |
+        echo "Setting VCPKG_ROOT to C:\vcpkg"
+        echo "VCPKG_ROOT=C:\vcpkg" >> $GITHUB_ENV
+    - name: Set VCPKG_ROOT for Linux
+      if: runner.os == 'Linux'
+      run: |
+        echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
+        echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
+    - name: Set VCPKG_ROOT for macOS
+      if: runner.os == 'macOS'
+      run: |
+        echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
+        echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
+    - name: Use vcpkg to fetch dependencies
+      env:
+        VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
+      if: steps.cache-vcpkg.outputs.cache-hit == 'true'
+      run: | 
+          vcpkg install
     - name: List vcpkg directories (Linux)
       run: |
         ls -l /usr/local/share/vcpkg
@@ -114,8 +106,14 @@ jobs:
       shell: powershell
       if: runner.os == 'Windows'
 
-    - name: Run CMake with manifest mode vcpkg
-      shell: bash
-      run: cmake -B build
-        -D "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
-        -D "VCPKG_INSTALLED_DIR:FILEPATH=$VCPKG_DEFAULT_BINARY_CACHE"
+    - name: Configure and run CMake
+      uses: lukka/run-cmake@v10
+      env:
+        VCPKG_ROOT: ${{ fromJSON('[ "/usr/local/share/vcpkg", "C:\\vcpkg" ]')[runner.os == 'Windows'] }}
+        CC: ${{ fromJSON('{"Linux":"gcc-10", "macOS":"clang", "Windows":"" }')[runner.os] }}
+        CXX: ${{ fromJSON('{"Linux":"g++-10", "macOS":"clang++", "Windows":"" }')[runner.os] }}
+      with:
+        cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
+        configurePreset: ${{ matrix.cmake_preset }}
+        buildPreset: ${{ matrix.cmake_preset }}
+        testPreset: ${{ matrix.cmake_preset }}
