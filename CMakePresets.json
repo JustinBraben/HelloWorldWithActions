@@ -12,10 +12,10 @@
               "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
               "type": "FILEPATH"
             },
-            /*"VCPKG_INSTALLED_DIR": {
+            "VCPKG_INSTALLED_DIR": {
               "value": "$env{VCPKG_ROOT}/installed",
               "type": "FILEPATH"
-            }*/
+            }
           }
         },
         {

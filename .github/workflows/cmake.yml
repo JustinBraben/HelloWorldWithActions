@@ -55,31 +55,31 @@ jobs:
         fi
       if: runner.os == 'Linux'
 
-    - name: Restore vcpkg
-      uses: actions/cache@v3
-      with:
-        path: |
-          /usr/local/share/vcpkg
-          C:\vcpkg
-        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+    #- name: Restore vcpkg
+    #  uses: actions/cache@v3
+    #  with:
+    #    path: |
+    #      /usr/local/share/vcpkg
+    #      C:\vcpkg
+    #    key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
 
-    - name: Set VCPKG_ROOT for Windows
-      if: runner.os == 'Windows'
-      run: |
-        echo "Setting VCPKG_ROOT to C:\vcpkg"
-        echo "VCPKG_ROOT=C:\vcpkg" >> $GITHUB_ENV
+    #- name: Set VCPKG_ROOT for Windows
+    #  if: runner.os == 'Windows'
+    #  run: |
+    #    echo "Setting VCPKG_ROOT to C:\vcpkg"
+    #    echo "VCPKG_ROOT=C:\vcpkg" >> $GITHUB_ENV
 
-    - name: Set VCPKG_ROOT for Linux
-      if: runner.os == 'Linux'
-      run: |
-        echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
-        echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
+    #- name: Set VCPKG_ROOT for Linux
+    #  if: runner.os == 'Linux'
+    #  run: |
+    #    echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
+    #    echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
 
-    - name: Set VCPKG_ROOT for macOS
-      if: runner.os == 'macOS'
-      run: |
-        echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
-        echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
+    #- name: Set VCPKG_ROOT for macOS
+    #  if: runner.os == 'macOS'
+    #  run: |
+    #    echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
+    #    echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
 
     #- name: Use vcpkg to fetch dependencies
     #  env:
@@ -117,4 +117,5 @@ jobs:
     - name: Run CMake with manifest mode vcpkg
       shell: bash
       run: cmake -B build
-        -D "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
+        -D "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+        -D "VCPKG_INSTALLED_DIR:FILEPATH="${VCPKG_DEFAULT_BINARY_CACHE}"
