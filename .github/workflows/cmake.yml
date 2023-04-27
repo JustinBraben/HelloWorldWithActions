@@ -62,9 +62,9 @@ jobs:
 
     - name: Install GNU Tar and Zstd on Windows
       run: |
-        choco install tar --source=chocolatey
+        choco install tartool --source=chocolatey
         refreshenv
-        choco install zstd --source=chocolatey
+        choco install 7zip-zstd --source=chocolatey
         refreshenv
       if: runner.os == 'Windows'
 

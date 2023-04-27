@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.20)
 
 message(STATUS "CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
 
-project(go-cpp CXX)
+project(myproject-cpp CXX)
 set(CMAKE_CXX_STANDARD 17)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
@@ -24,7 +24,7 @@ set(SFML_COMPONENTS system window graphics network audio)
 # Main executable
 ################################################################################
 
-add_executable(go ${PROJECT_SOURCE_DIR}/src/main.cpp)
+add_executable(myproject ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
 # Commented out the target_link_libraries line for goimpl
 # target_link_libraries(go goimpl)
@@ -36,16 +36,10 @@ add_executable(go ${PROJECT_SOURCE_DIR}/src/main.cpp)
 find_package(SFML COMPONENTS ${SFML_COMPONENTS} REQUIRED)
 
 foreach(component IN LISTS SFML_COMPONENTS)
-  if(SFML_${component}_FOUND)
-    message(STATUS "SFML ${component} found:")
-    message(STATUS "  Include directory: ${SFML_${component}_INCLUDE_DIR}")
-    message(STATUS "  Library: ${SFML_${component}_LIBRARY}")
-  else()
-    message(WARNING "SFML ${component} not found")
-  endif()
+  message(STATUS "Checking SFML component: ${component}")
 endforeach()
 
-target_link_libraries(go sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
+target_link_libraries(myproject sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 
 ################################################################################
 # Test executable
