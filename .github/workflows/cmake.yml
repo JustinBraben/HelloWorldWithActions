@@ -46,22 +46,25 @@ jobs:
       uses: actions/cache@v3
       with:
         path: |
-          /usr/local/share/vcpkg/installed
-          C:\vcpkg\installed
+          /usr/local/share/vcpkg
+          C:\vcpkg
         key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
+
+    - name: Set VCPKG_ROOT
+      run: |
+        if [ "${{ runner.os }}" = "Windows" ]; then
+          echo "Setting VCPKG_ROOT to C:\vcpkg\installed"
+          echo "VCPKG_ROOT=C:\vcpkg\installed" >> $GITHUB_ENV
+        else
+          echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg/installed"
+          echo "VCPKG_ROOT=/usr/local/share/vcpkg/installed" >> $GITHUB_ENV
+        fi
+
 
     - name: Use vcpkg to fetch dependencies
       env:
         VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
       run: vcpkg install
-
-    - name: Cache vcpkg dependencies
-      uses: actions/cache@v3
-      with:
-        path: |
-          /usr/local/share/vcpkg/installed
-          C:\vcpkg\installed
-        key: ${{ runner.os }}-vcpkg-${{ hashFiles('vcpkg.json') }}
 
     - name: List vcpkg directories (Linux)
       run: |
