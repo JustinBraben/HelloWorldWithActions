@@ -81,12 +81,15 @@ jobs:
         echo "Setting VCPKG_ROOT to /usr/local/share/vcpkg"
         echo "VCPKG_ROOT=/usr/local/share/vcpkg" >> $GITHUB_ENV
 
-    - name: Use vcpkg to fetch dependencies
-      env:
-        VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
-      #if: steps.cache-vcpkg.outputs.cache-hit == 'true'
-      run: | 
-          vcpkg install
+    #- name: Use vcpkg to fetch dependencies
+    #  env:
+    #    VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
+    #  #if: steps.cache-vcpkg.outputs.cache-hit == 'true'
+    #  run: | 
+    #      vcpkg install
+    - name: Set up vcpkg
+      uses: friendlyanon/setup-vcpkg@v1
+      with: { committish: 63aa65e65b9d2c08772ea15d25fb8fdb0d32e557 }
 
     - name: List vcpkg directories (Linux)
       run: |
@@ -111,17 +114,7 @@ jobs:
       shell: powershell
       if: runner.os == 'Windows'
 
-    - name: Compile with CMake
+    - name: Run CMake with manifest mode vcpkg
       shell: bash
-      run: |
-        # Set the CC and CXX environment variables
-        export CC="gcc-10"
-        export CXX="g++-10"
-
-        # Run the cmake command
-        cmake \
-        -DCMAKE_TOOLCHAIN_FILE:FILEPATH="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
-        -DVCPKG_INSTALLED_DIR:FILEPATH="$VCPKG_ROOT/installed" \
-        -DCMAKE_BUILD_TYPE:STRING="${{ matrix.cmake_preset }}" \
-        -B build \
-        --debug-output
+      run: cmake -B build
+        -D "CMAKE_TOOLCHAIN_FILE=$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake"
