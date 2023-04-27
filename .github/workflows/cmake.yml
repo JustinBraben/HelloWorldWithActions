@@ -42,7 +42,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install -y libx11-dev libxrandr-dev libxi-dev libudev-dev libgl1-mesa-dev
 
-    - name: Cache vcpkg dependencies
+    - name: Restore vcpkg
       uses: actions/cache@v3
       with:
         path: |
@@ -54,6 +54,30 @@ jobs:
       env:
         VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
       run: vcpkg install
+
+    - name: List vcpkg directories (Linux)
+      run: |
+        ls -l /usr/local/share/vcpkg
+        ls -l /usr/local/bin/vcpkg
+        ls -l /usr/local/bin
+        ls -l /usr/local
+      if: runner.os == 'Linux'
+
+    - name: List vcpkg directories (macOS)
+      run: |
+        ls -l /usr/local/share/vcpkg
+        ls -l /usr/local/bin/vcpkg
+        ls -l /usr/local/bin
+        ls -l /usr/local
+      if: runner.os == 'macOS'
+
+    - name: List vcpkg directories (Windows)
+      run: |
+        dir C:\vcpkg\installed
+        dir C:\vcpkg
+        dir
+      shell: powershell
+      if: runner.os == 'Windows'
 
     - name: Configure and run CMake
       uses: lukka/run-cmake@v10
