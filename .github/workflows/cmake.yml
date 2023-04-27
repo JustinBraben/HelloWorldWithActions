@@ -42,6 +42,12 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: sudo apt-get install -y libx11-dev libxrandr-dev libxi-dev libudev-dev libgl1-mesa-dev
 
+    - name: Modify vcpkg directory permissions
+      run: |
+        sudo chmod -R 777 /usr/local/share/vcpkg/
+        sudo chmod -R 777 /usr/local/bin/vcpkg/
+      if: runner.os == 'Linux'
+
     - name: Restore vcpkg
       uses: actions/cache@v3
       with:
@@ -71,7 +77,10 @@ jobs:
     - name: Use vcpkg to fetch dependencies
       env:
         VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
-      run: vcpkg install
+      run: |
+        if ${{ steps.cache-vcpkg.outputs.cache-hit }} != 'true'; then
+          vcpkg install
+        fi
 
     - name: List vcpkg directories (Linux)
       run: |
