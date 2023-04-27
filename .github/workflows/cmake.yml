@@ -54,11 +54,17 @@ jobs:
         fi
       if: runner.os == 'Linux'
 
-    - name: Install GNU Tar and Zstd
+    - name: Configure Chocolatey Package Source on windows
       run: |
-        choco install tar
+        choco source add -n=chocolatey -s=https://chocolatey.org/api/v2/
+        choco source add -n=chocolatey-licensed -s=https://licensedpackages.chocolatey.org/api/v2/
+      if: runner.os == 'Windows'
+
+    - name: Install GNU Tar and Zstd on Windows
+      run: |
+        choco install tar --source=chocolatey
         refreshenv
-        choco install zstd
+        choco install zstd --source=chocolatey
         refreshenv
       if: runner.os == 'Windows'
 
