@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.20)
 
+message(STATUS "CMAKE_TOOLCHAIN_FILE: ${CMAKE_TOOLCHAIN_FILE}")
+
 project(go-cpp CXX)
 set(CMAKE_CXX_STANDARD 17)
 include_directories(${PROJECT_SOURCE_DIR}/src)
@@ -15,6 +17,9 @@ include_directories(${PROJECT_SOURCE_DIR}/src)
 # list(REMOVE_ITEM SOURCE_FILES ${PROJECT_SOURCE_DIR}/source/main.cpp)
 # add_library(goimpl ${SOURCE_FILES})
 
+set(CMAKE_BINARY_DIR ${CMAKE_SOURCE_DIR}/build)
+set(SFML_COMPONENTS system window graphics network audio)
+
 ################################################################################
 # Main executable
 ################################################################################
@@ -28,7 +33,18 @@ add_executable(go ${PROJECT_SOURCE_DIR}/src/main.cpp)
 # Find and link SFML
 ################################################################################
 
-find_package(SFML COMPONENTS system window graphics network audio REQUIRED)
+find_package(SFML COMPONENTS ${SFML_COMPONENTS} REQUIRED)
+
+foreach(component IN LISTS SFML_COMPONENTS)
+  if(SFML_${component}_FOUND)
+    message(STATUS "SFML ${component} found:")
+    message(STATUS "  Include directory: ${SFML_${component}_INCLUDE_DIR}")
+    message(STATUS "  Library: ${SFML_${component}_LIBRARY}")
+  else()
+    message(WARNING "SFML ${component} not found")
+  endif()
+endforeach()
+
 target_link_libraries(go sfml-system sfml-window sfml-graphics sfml-network sfml-audio)
 
 ################################################################################

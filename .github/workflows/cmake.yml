@@ -111,14 +111,29 @@ jobs:
       shell: powershell
       if: runner.os == 'Windows'
 
-    - name: Configure and run CMake
-      uses: lukka/run-cmake@v10
-      env:
-        VCPKG_ROOT: ${{ fromJSON('[ "/usr/local/share/vcpkg", "C:\\vcpkg" ]')[runner.os == 'Windows'] }}
-        CC: ${{ fromJSON('{"Linux":"gcc-10", "macOS":"clang", "Windows":"" }')[runner.os] }}
-        CXX: ${{ fromJSON('{"Linux":"g++-10", "macOS":"clang++", "Windows":"" }')[runner.os] }}
-      with:
-        cmakeListsTxtPath: '${{ github.workspace }}/CMakeLists.txt'
-        configurePreset: ${{ matrix.cmake_preset }}
-        buildPreset: ${{ matrix.cmake_preset }}
-        testPreset: ${{ matrix.cmake_preset }}
+    - name: Compile with CMake on Windows
+      shell: bash
+      if: runner.os == 'Windows'
+      run: |
+        cmake \
+        -DCMAKE_TOOLCHAIN_FILE:FILEPATH="$env:VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+        -DVCPKG_INSTALLED_DIR:FILEPATH="$env:VCPKG_ROOT/installed" \
+        -DCMAKE_BUILD_TYPE:STRING="${{ matrix.cmake_preset }}" \
+        -B build \
+        --debug-output
+
+    - name: Compile with CMake on Linux/Mac
+      shell: bash
+      if: runner.os != 'Windows'
+      run: |
+        # Set the CC and CXX environment variables
+        export CC="gcc-10"
+        export CXX="g++-10"
+
+        # Run the cmake command
+        cmake \
+        -DCMAKE_TOOLCHAIN_FILE:FILEPATH="$VCPKG_ROOT/scripts/buildsystems/vcpkg.cmake" \
+        -DVCPKG_INSTALLED_DIR:FILEPATH="$VCPKG_ROOT/installed" \
+        -DCMAKE_BUILD_TYPE:STRING="${{ matrix.cmake_preset }}" \
+        -B build \
+        --debug-output

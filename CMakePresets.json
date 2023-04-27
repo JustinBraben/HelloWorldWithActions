@@ -6,13 +6,17 @@
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/out/${presetName}",
-            "cacheVariables": {
-                "CMAKE_INSTALL_PREFIX": "${sourceDir}/out/${presetName}/install/",
-                "CMAKE_TOOLCHAIN_FILE": {
-                    "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
-                     "type": "FILEPATH"
-                  }
+          "cacheVariables": {
+            "CMAKE_INSTALL_PREFIX": "${sourceDir}/build/${presetName}/install/",
+            "CMAKE_TOOLCHAIN_FILE": {
+              "value": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake",
+              "type": "FILEPATH"
+            },
+            "VCPKG_INSTALLED_DIR": {
+              "value": "$env{VCPKG_ROOT}/installed",
+              "type": "FILEPATH"
             }
+          }
         },
         {
             "name": "debug",

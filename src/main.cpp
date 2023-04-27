@@ -5,7 +5,7 @@
 int main() {
     // Create the main window
     sf::RenderWindow window(sf::VideoMode(800, 600), "Hello, World!");
-
+    
     // Get the path to the current source file
     std::filesystem::path srcPath(__FILE__);
 
