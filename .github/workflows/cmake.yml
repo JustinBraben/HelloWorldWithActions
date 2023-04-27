@@ -1,6 +1,9 @@
 name: Build/Test cross-platform CMake project
 
 on:
+  push:
+    branches:
+      - master
   pull_request:
     paths-ignore:
       - .github/workflows/dependency-cache.yaml
@@ -44,8 +47,12 @@ jobs:
 
     - name: Modify vcpkg directory permissions
       run: |
-        sudo chmod -R 777 /usr/local/share/vcpkg/
-        sudo chmod -R 777 /usr/local/bin/vcpkg/
+        if [ -d "/usr/local/share/vcpkg/" ]; then
+          sudo chmod -R 777 /usr/local/share/vcpkg/
+        fi
+        if [ -d "/usr/local/bin/vcpkg" ]; then
+          sudo chmod -R 777 /usr/local/bin/vcpkg/
+        fi
       if: runner.os == 'Linux'
 
     - name: Restore vcpkg
@@ -78,9 +85,8 @@ jobs:
       env:
         VCPKG_BINARY_SOURCES: 'clear;nuget,${{ env.NUGET_SOURCE_NAME }},read'
       run: |
-        if ${{ steps.cache-vcpkg.outputs.cache-hit }} != 'true'; then
+      if: steps.cache-vcpkg.outputs.cache-hit == "true"
           vcpkg install
-        fi
 
     - name: List vcpkg directories (Linux)
       run: |
