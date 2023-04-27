@@ -54,6 +54,14 @@ jobs:
         fi
       if: runner.os == 'Linux'
 
+    - name: Install GNU Tar and Zstd
+      run: |
+        choco install tar
+        refreshenv
+        choco install zstd
+        refreshenv
+      if: runner.os == 'Windows'
+
     - name: Restore vcpkg
       uses: actions/cache@v3
       with:
